@@ -1,16 +1,19 @@
 package compilador;
+import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -22,10 +25,10 @@ public class AppCompilador extends JFrame implements ActionListener{
 	private JMenuItem itemNuevo,itemAbrir,itemGuardar,itemSalir,itemAnalisLexico;
 	private JFileChooser ventanaArchivos;
 	private File archivo;
-	private JTextArea areaTexto,areaObjeto;
+	private JTextArea areaTexto;
 	private JList<String> tokens;
 	private JTabbedPane documentos,consola;
-	private String [] titulos ={"Tipo","Nombre","Valor"};
+	private String [] titulos ={"Tipo","Nombre","Valor","Tpodevariable","Linea"};
 	DefaultTableModel modelo = new DefaultTableModel(new Object[0][0],titulos);
 	private JTable mitabla = new JTable(modelo);
 	public static void main(String[] args) {
@@ -37,26 +40,12 @@ public class AppCompilador extends JFrame implements ActionListener{
 	}
 	public AppCompilador() {
 		super("Compilador");
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setIconImage(new ImageIcon("icono.png").getImage());
 		setLayout(new GridLayout(2,0));
-		setSize(800,700);
+		setSize(800,600);
 		setLocationRelativeTo(null);
 		creaInterFaz();
-	    addWindowListener((WindowListener) new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-
-				int option = JOptionPane.showConfirmDialog(null,
-					"¿Estás seguro de que quieres cerrar la aplicación?",
-					"Confirmación de cierre", 
-					JOptionPane.YES_NO_OPTION, 
-					JOptionPane.QUESTION_MESSAGE);
-				if (option == JOptionPane.YES_OPTION) {
-					System.exit(0);
-				}
-			}
-		});
 		setVisible(true);
 	}
 	private void creaInterFaz() {
@@ -87,7 +76,6 @@ public class AppCompilador extends JFrame implements ActionListener{
 		barraMenu.add(menuArchivo);
 		barraMenu.add(MenuAnalisis);
 		areaTexto = new JTextArea();
-		areaObjeto = new JTextArea();
 		ventanaArchivos= new JFileChooser("Guardar");
 		areaTexto.setFont(new Font("Consolas", Font.PLAIN, 12));
 		documentos = new JTabbedPane();
@@ -98,7 +86,6 @@ public class AppCompilador extends JFrame implements ActionListener{
 		tokens=new JList<String>();
 		consola.addTab("Consola",new JScrollPane(tokens));
 		consola.addTab("Tabla",new JScrollPane(mitabla));
-		consola.addTab("Codigo Objeto", new JScrollPane(areaObjeto));
 		add(consola);
 		itemNuevo.setIcon(new ImageIcon("nuevo.png"));
 		itemGuardar.setIcon(new ImageIcon("guardar.png"));
@@ -108,7 +95,6 @@ public class AppCompilador extends JFrame implements ActionListener{
 		documentos.setIconAt(0, new ImageIcon("codigo.png"));
 		consola.setIconAt(0, new ImageIcon("consola.png"));
 		consola.setIconAt(1, new ImageIcon("tabla.png"));
-		consola.setIconAt(2, new ImageIcon("Codigoobjeto.png"));
 		consola.setToolTipText("Aqui se muestra el resultado del analisis");
 
 	}
@@ -123,7 +109,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 				for (int i = analisador.getIdenti().size()-1; i >=0; i--) {
 					Identificador id = analisador.getIdenti().get(i);
 					if(!id.tipo.equals("")) {
-						Object datostabla[]= {id.tipo,id.nombre,id.valor};
+						Object datostabla[]= {id.tipo,id.nombre,id.valor,"local",id.linea};
 						modelo.addRow(datostabla);
 					}
 				}

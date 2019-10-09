@@ -20,10 +20,13 @@ public class Analisis
 		analisaCodigo(ruta);
 		if(bandera) {
 			impresion.add("No hay errores lexicos");
-			analisisSintactio(tokens.getInicio());
+			analisisSintactico(tokens.getInicio());
+			analisisSemantico(tokens.getInicio());
 		}
 		if(impresion.get(impresion.size()-1).equals("No hay errores lexicos"))
 			impresion.add("No hay errores sintacticos");
+		if(impresion.get(impresion.size()-1).equals("No hay errores sintacticos"))
+			impresion.add("No hay errores semanticos");
 		for (Identificador identificador : identi) {
 			if (identificador.getTipo().equals("")) {
 				String x =buscar(identificador.getNombre());
@@ -31,6 +34,55 @@ public class Analisis
 			}
 		}
 			
+	}
+	private static boolean isNumeric(String cadena){
+		try {
+			Integer.parseInt(cadena);
+			return true;
+		} catch (NumberFormatException nfe){
+			return false;
+		}
+	}
+	public boolean isString(Object str) {
+        if (str.equals("true") || str.equals("false")) {
+            return true;
+        } else {
+            return false;
+        }
+ 
+    }
+	public Token analisisSemantico(NodoDoble<Token> nodo) {
+		Token tokensig, to;
+		
+		if(nodo!=null) {
+			to =  nodo.dato;
+			tokensig=analisisSemantico(nodo.siguiente);
+			if (to.getValor().equals("int")) {	
+					if(!isNumeric(nodo.siguiente.siguiente.siguiente.dato.getValor())) {
+						impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a "+nodo.siguiente.dato.getValor()+" el valor "+ nodo.siguiente.siguiente.siguiente.dato.getValor());				
+				}
+			}
+			if(to.getValor().equals("boolean")) {
+				if(!isString(nodo.siguiente.siguiente.siguiente.dato.getValor())) {
+					impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a "+nodo.siguiente.dato.getValor()+" el valor "+ nodo.siguiente.siguiente.siguiente.dato.getValor());
+				}
+			}
+			if (to.getValor().equals("float")) {	
+				if(!isNumeric(nodo.siguiente.siguiente.siguiente.dato.getValor())) {
+					impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a "+nodo.siguiente.dato.getValor()+" el valor "+ nodo.siguiente.siguiente.siguiente.dato.getValor());
+				
+			}
+			}
+			if(Token.IDENTIFICADOR==to.getTipo()) {
+				if(cuenta(nodo.dato.getValor())>1) {
+					impresion.add("Error semantico en la linea "+to.getLinea()+" ya se encuentra declarada la variable "+nodo.dato.getValor());
+				}
+			}
+		
+			
+			return to;
+		}
+		return  vacio;
 	}
 	public void analisaCodigo(String ruta) {
 		String linea="", token="";
@@ -56,12 +108,12 @@ public class Analisis
 			JOptionPane.showMessageDialog(null,"No se encontro el archivo favor de checar la ruta","Alerta",JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	public Token analisisSintactio(NodoDoble<Token> nodo) {
+	public Token analisisSintactico(NodoDoble<Token> nodo) {
 		Token tokensig, to;
 	
 		if(nodo!=null) {
 			to =  nodo.dato;
-			tokensig=analisisSintactio(nodo.siguiente);
+			tokensig=analisisSintactico(nodo.siguiente);
 			switch (to.getTipo()) {
 			case Token.MODIFICADOR:
 				int sig=tokensig.getTipo();
@@ -73,7 +125,7 @@ public class Analisis
 					impresion.add("Error sinatactico en la linea "+to.getLinea()+" se esparaba un simbolo");
 				else
 					if(nodo.anterior.dato.getValor().equals("class")){
-						identi.add( new Identificador(to.getValor(), " ", "class"));
+						identi.add( new Identificador(to.getValor(), " ", "class",to.getLinea()));
 					}
 				break;
 			case Token.TIPO_DATO:
@@ -111,7 +163,7 @@ public class Analisis
 							impresion.add("Error sinatactico en la linea "+to.getLinea()+ " se esperaba una constante");
 						else {
 							if(nodo.anterior.anterior.dato.getTipo()==Token.TIPO_DATO)
-								identi.add(new Identificador(nodo.anterior.dato.getValor(),tokensig.getValor(),nodo.anterior.anterior.dato.getValor()));
+								identi.add(new Identificador(nodo.anterior.dato.getValor(),tokensig.getValor(),nodo.anterior.anterior.dato.getValor(),to.getLinea()));
 							else
 								impresion.add("Error sinatactico en linea "+to.getLinea()+ " se esperaba un tipo de dato");
 							
