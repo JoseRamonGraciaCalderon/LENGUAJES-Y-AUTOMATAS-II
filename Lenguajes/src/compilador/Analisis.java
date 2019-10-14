@@ -401,6 +401,7 @@ public class Analisis
 				String perron = null;
 				aux1=poderoso(nodo.anterior.dato.getValor());
 				aux2=poderoso(nodo.siguiente.dato.getValor());
+				boolean bandera1=false;
 				for(int i=0;i<identi.size();i++) {
 					if(identi.get(i).getNombre().equals(nodo.anterior.anterior.anterior.dato.getValor())) {
 						perron=identi.get(i).getTipo();
@@ -413,8 +414,15 @@ public class Analisis
 					String loca2=poderoso(nodo.siguiente.dato.getValor());
 					String tipo=nodo.anterior.anterior.anterior.anterior.dato.getValor();
 					if((loca1!=loca2)){
-						impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+tipo+ " no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+loca1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +loca2);						
+						impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+tipo+ " no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+loca1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +loca2);	
 					}else {
+						bandera1=true;
+					}
+					if(loca1.equals("boolean") && loca2.equals("boolean")) {
+						impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+tipo+ " no puedes asignar el  tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
+						bandera1=false;
+					}
+					if(bandera){
 						int suma=0;
 						float suma2=0;
 						String guarda=null;
@@ -488,9 +496,11 @@ public class Analisis
 				}else {
 					bandera=true;
 				}
-			
+				if(aux1.equals("boolean") && aux2.equals("boolean")) {
+					impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+perron+ " no puedes asignar el  tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
+					bandera=false;
+				}
 				if(bandera) {
-					System.out.println("el auxiliar uno tiene el valor"+aux1);
 					int suma=0;
 					float suma2=0;
 					String guarda=null;
