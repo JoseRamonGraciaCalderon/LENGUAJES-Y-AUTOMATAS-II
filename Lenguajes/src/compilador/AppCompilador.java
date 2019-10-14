@@ -27,7 +27,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 	private File archivo;
 	private JTextArea areaTexto;
 	private JList<String> tokens;
-	private JTabbedPane documentos,consola;
+	private JTabbedPane documentos,consola,tabladesimbolos;
 	private String [] titulos ={"Tipo","Nombre","Valor","Tpodevariable","Linea"};
 	DefaultTableModel modelo = new DefaultTableModel(new Object[0][0],titulos);
 	private JTable mitabla = new JTable(modelo);
@@ -42,7 +42,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 		super("Compilador");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setIconImage(new ImageIcon("icono.png").getImage());
-		setLayout(new GridLayout(2,0));
+		setLayout(new GridLayout(2,3));
 		setSize(800,600);
 		setLocationRelativeTo(null);
 		creaInterFaz();
@@ -80,13 +80,16 @@ public class AppCompilador extends JFrame implements ActionListener{
 		areaTexto.setFont(new Font("Consolas", Font.PLAIN, 12));
 		documentos = new JTabbedPane();
 		consola = new JTabbedPane();
+		tabladesimbolos=new  JTabbedPane();
 		documentos.addTab("Nuevo", new JScrollPane(areaTexto));
 		documentos.setToolTipText("Aqui se muestra el codigo");
 		add(documentos);
 		tokens=new JList<String>();
+		tabladesimbolos.addTab("Tabla",new JScrollPane(mitabla));
+		add(tabladesimbolos);
 		consola.addTab("Consola",new JScrollPane(tokens));
-		consola.addTab("Tabla",new JScrollPane(mitabla));
 		add(consola);
+	
 		itemNuevo.setIcon(new ImageIcon("nuevo.png"));
 		itemGuardar.setIcon(new ImageIcon("guardar.png"));
 		itemAbrir.setIcon(new ImageIcon("abrir.png"));
@@ -94,7 +97,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 		itemAnalisLexico.setIcon(new ImageIcon("lexico.png"));
 		documentos.setIconAt(0, new ImageIcon("codigo.png"));
 		consola.setIconAt(0, new ImageIcon("consola.png"));
-		consola.setIconAt(1, new ImageIcon("tabla.png"));
+		tabladesimbolos.setIconAt(0, new ImageIcon("tabla.png"));
 		consola.setToolTipText("Aqui se muestra el resultado del analisis");
 
 	}
@@ -106,10 +109,10 @@ public class AppCompilador extends JFrame implements ActionListener{
 				tokens.setListData(analisador.getmistokens().toArray( new String [0]));
 				modelo = new DefaultTableModel(new Object[0][0],titulos);
 				mitabla.setModel(modelo);
-				for (int i = analisador.getIdenti().size()-1; i >=0; i--) {
+				for (int i=0 ;i< analisador.getIdenti().size(); i++) {
 					Identificador id = analisador.getIdenti().get(i);
 					if(!id.tipo.equals("")) {
-						Object datostabla[]= {id.tipo,id.nombre,id.valor,"local",id.linea};
+						Object datostabla[]= {id.tipo,id.nombre,id.valor,id.local,id.linea};
 						modelo.addRow(datostabla);
 					}
 				}

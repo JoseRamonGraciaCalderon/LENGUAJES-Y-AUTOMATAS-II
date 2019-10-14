@@ -10,6 +10,7 @@ public class Analisis
 	ArrayList<String> impresion; //para la salida
 	ArrayList<Identificador> identi = new ArrayList<Identificador>();
 	ListaDoble<Token> tokens;
+	ArrayList<String> auxiliar = new ArrayList<String>();
 	final Token vacio=new Token("", 9,0);
 	boolean bandera=true;
 	
@@ -35,7 +36,8 @@ public class Analisis
 		}
 			
 	}
-	private static boolean isNumeric(String cadena){
+	private  boolean isNumeric(String cadena){
+
 		try {
 			Integer.parseInt(cadena);
 			return true;
@@ -44,6 +46,7 @@ public class Analisis
 		}
 	}
 	public boolean isString(Object str) {
+		
         if (str.equals("true") || str.equals("false")) {
             return true;
         } else {
@@ -51,35 +54,148 @@ public class Analisis
         }
  
     }
+	public boolean isDecimal(String numero){
+		float n;
+		try {
+		 n=Float.parseFloat(numero);
+		 return true;
+		}catch(NumberFormatException nfe) {
+			return false;
+		}
+	   
+	}
+	public boolean isChar(Object str) {
+        if (str.equals(str.toString())) {
+            return false;
+        } else {
+            return true;
+        }
+ 
+    }
+	public static String poderoso(String loca) {
+		Pattern entero = Pattern.compile("[0-9]+");//Expresiones Regulares para enteros
+		Matcher entero1 = entero.matcher(loca);
+		//para char '([^']*)'
+		Pattern string = Pattern.compile("[a-zA-Z]+[^true|false]");//Expresiones Regulares para string
+		Matcher string1 = string.matcher(loca);
+		//"/^[0-9]+([.])?([0-9]+)?$/"
+		Pattern decimal = Pattern.compile("[0-9]+[.]+[0-9]+");//Expresiones Regulares para float
+		Matcher decimal1 = decimal.matcher(loca);
+		
+		Pattern booleano = Pattern.compile("[true|false]");//Expresiones para booleanos
+		Matcher booleano1 = booleano.matcher(loca);
+		
+		if(string1.find()) {
+			return "string";
+		}
+		else if(decimal1.find()) {
+			return "float";
+		}
+		else if(booleano1.find()) {
+			return "boolean";
+		}
+		else if(entero1.find()) {
+			return "int";
+		}
+		else {
+			return "";
+		}
+	
+	}
 	public Token analisisSemantico(NodoDoble<Token> nodo) {
 		Token tokensig, to;
 		
 		if(nodo!=null) {
 			to =  nodo.dato;
-			tokensig=analisisSemantico(nodo.siguiente);
-			if (to.getValor().equals("int")) {	
-					if(!isNumeric(nodo.siguiente.siguiente.siguiente.dato.getValor())) {
-						impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a "+nodo.siguiente.dato.getValor()+" el valor "+ nodo.siguiente.siguiente.siguiente.dato.getValor());				
-				}
-			}
-			if(to.getValor().equals("boolean")) {
-				if(!isString(nodo.siguiente.siguiente.siguiente.dato.getValor())) {
-					impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a "+nodo.siguiente.dato.getValor()+" el valor "+ nodo.siguiente.siguiente.siguiente.dato.getValor());
-				}
-			}
-			if (to.getValor().equals("float")) {	
-				if(!isNumeric(nodo.siguiente.siguiente.siguiente.dato.getValor())) {
-					impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a "+nodo.siguiente.dato.getValor()+" el valor "+ nodo.siguiente.siguiente.siguiente.dato.getValor());
-				
-			}
-			}
-			if(Token.IDENTIFICADOR==to.getTipo()) {
-				if(cuenta(nodo.dato.getValor())>1) {
-					impresion.add("Error semantico en la linea "+to.getLinea()+" ya se encuentra declarada la variable "+nodo.dato.getValor());
-				}
-			}
+				if (to.getValor().equals("int")) {	
+						if(!(nodo.siguiente.siguiente.dato.getValor().contains(";"))) {
+							if(!isNumeric(nodo.siguiente.siguiente.siguiente.dato.getValor())) {
+								String guarda;
+								guarda=poderoso(nodo.siguiente.siguiente.siguiente.dato.getValor());
+								impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nodo.siguiente.dato.getValor()+"' del tipo int"+" el valor '"+ nodo.siguiente.siguiente.siguiente.dato.getValor()+"' del tipo de dato "+guarda);				
+								}
+						}
 		
+				}
+				if (to.getValor().equals("boolean")) {	
+						if(!(nodo.siguiente.siguiente.dato.getValor().contains(";"))) {
+							if(!isString(nodo.siguiente.siguiente.siguiente.dato.getValor())) {
+								String guarda;
+								guarda=poderoso(nodo.siguiente.siguiente.siguiente.dato.getValor());
+								impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nodo.siguiente.dato.getValor()+"' del tipo boolean"+" el valor '"+ nodo.siguiente.siguiente.siguiente.dato.getValor()+"' del tipo de dato "+guarda);
+							}
+						}
+		
+				}
+				if (to.getValor().equals("float")) {	
+						if(!(nodo.siguiente.siguiente.dato.getValor().contains(";"))) {
+							if(!isDecimal(nodo.siguiente.siguiente.siguiente.dato.getValor())) {
+								String guarda;
+								guarda=poderoso(nodo.siguiente.siguiente.siguiente.dato.getValor());
+								impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nodo.siguiente.dato.getValor()+"' del tipo float"+" el valor '"+ nodo.siguiente.siguiente.siguiente.dato.getValor()+"' del tipo de dato "+guarda);
+							
+							}
+						}
+		
+				}
 			
+				 //para el caso x=5;
+				 if(to.getValor().equals(";")) {
+					 if(nodo.anterior.anterior.dato.getValor().equals("=") && !(nodo.anterior.dato.getValor().contains("+")||nodo.anterior.dato.getValor().contains("/")||nodo.anterior.dato.getValor().contains("*")||nodo.anterior.dato.getValor().contains("-"))) {
+						 if(!(nodo.anterior.dato.getTipo()==Token.IDENTIFICADOR&&nodo.anterior.anterior.anterior.dato.getTipo()==Token.IDENTIFICADOR)) {
+							 
+						System.out.println("Entro a x=5");
+						 System.out.println(nodo.anterior.dato.getValor()+ " auxiliar valor");
+						 String nombre=nodo.anterior.anterior.anterior.dato.getValor();
+						 System.out.println(nombre+" auxiliar nombre");
+						 String guarda=null;
+						for(int i=0;i<identi.size();i++) {
+							 String valor=nodo.anterior.dato.getValor();
+							
+							 if(identi.get(i).getTipo().equals("int") && identi.get(i).getNombre().equals(nombre)) {
+								 guarda=poderoso(valor);
+							 if(!(identi.get(i).getTipo().equals(guarda) && identi.get(i).getNombre().equals(nombre))) {
+								 if (!(impresion.contains("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda))) {
+									 impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda);
+							 	}
+							 }
+							 } else
+							 if(identi.get(i).getTipo().equals("float") && identi.get(i).getNombre().equals(nombre) ) {
+								 guarda=poderoso(valor);
+								 if(!(identi.get(i).getTipo().equals(guarda) && identi.get(i).getNombre().equals(nombre))) {
+									 if (!(impresion.contains("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda))) {
+										 impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda);
+								 	}
+								 }
+								}else
+							 if(identi.get(i).getTipo().equals("boolean") && identi.get(i).getNombre().equals(nombre)) {
+								 guarda=poderoso(valor);
+								 if(!(identi.get(i).getTipo().equals(guarda) && identi.get(i).getNombre().equals(nombre))) {
+									 if (!(impresion.contains("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda))) {
+										 impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda);
+								 	}
+								 	}
+							 }
+						 }	 
+				
+						 }
+					 }
+				 }
+					if(to.getTipo()==Token.IDENTIFICADOR) {
+						String auxiliar = to.getValor();
+						boolean banderaM = false;
+						
+						for( int i=0; i<identi.size(); i++) {
+							if(identi.get(i).getNombre().equals(auxiliar)) {
+								banderaM=true;
+							}
+						  }
+						if(!banderaM)
+							impresion.add("Error semantico en la linea "+to.getLinea() + " se usa la variable " + auxiliar + " no esta declarada");
+						  }
+	
+	
+			tokensig=analisisSemantico(nodo.siguiente);
 			return to;
 		}
 		return  vacio;
@@ -109,29 +225,29 @@ public class Analisis
 		}
 	}
 	public Token analisisSintactico(NodoDoble<Token> nodo) {
-		Token tokensig, to;
+		Token  to;
 	
 		if(nodo!=null) {
 			to =  nodo.dato;
-			tokensig=analisisSintactico(nodo.siguiente);
+			
 			switch (to.getTipo()) {
 			case Token.MODIFICADOR:
-				int sig=tokensig.getTipo();
+				int sig=nodo.siguiente.dato.getTipo();
 				if(sig!=Token.TIPO_DATO && sig!=Token.CLASE)
-					impresion.add("Error sinatactico en la linea "+to.getLinea()+" se esparaba un tipo de dato");
+					impresion.add("Error sinatactico en la linea "+to.getLinea()+" se esparaba un tipo entra a modificador de dato");
 				break;
 			case Token.IDENTIFICADOR:
-				if(!(Arrays.asList("{","=",";").contains(tokensig.getValor()))) 
+				if(!(Arrays.asList("{","=",";").contains(nodo.siguiente.dato.getValor()))) 
 					impresion.add("Error sinatactico en la linea "+to.getLinea()+" se esparaba un simbolo");
 				else
 					if(nodo.anterior.dato.getValor().equals("class")){
-						identi.add( new Identificador(to.getValor(), " ", "class",to.getLinea()));
+						identi.add( new Identificador(to.getValor(), " ", "class","local",to.getLinea()));
 					}
 				break;
 			case Token.TIPO_DATO:
 			case Token.CLASE:
 				if(nodo.anterior.dato.getTipo()==Token.MODIFICADOR) {
-					if(tokensig.getTipo()!=Token.IDENTIFICADOR) 
+					if(nodo.siguiente.dato.getTipo()!=Token.IDENTIFICADOR) 
 						impresion.add("Error sinatactico en la linea "+to.getLinea()+" se esparaba un identificador");
 				}else
 					impresion.add("Error sinatactico en la linea "+to.getLinea()+" se esperaba un modificador");
@@ -149,38 +265,97 @@ public class Analisis
 						impresion.add("Error sinatactico en la linea "+to.getLinea()+ " falta un )");
 					else
 					{
-						if(!(nodo.anterior.dato.getValor().equals("if")&&tokensig.getTipo()==Token.CONSTANTE)) {
+						if(!(nodo.anterior.dato.getValor().equals("if")&&nodo.siguiente.dato.getTipo()==Token.CONSTANTE)) {
 							impresion.add("Error sinatactico en la linea "+to.getLinea()+ " se esperaba un valor");
 						}
 					}
 				}else if(to.getValor().equals(")")) {
 					if(cuenta("(")!=cuenta(")"))
 						impresion.add("Error sinatactico en la linea "+to.getLinea()+ " falta un (");
-				}
-				else if(to.getValor().equals("=")){
-					if(nodo.anterior.dato.getTipo()==Token.IDENTIFICADOR) {
-						if(tokensig.getTipo()!=Token.CONSTANTE)
-							impresion.add("Error sinatactico en la linea "+to.getLinea()+ " se esperaba una constante");
-						else {
-							if(nodo.anterior.anterior.dato.getTipo()==Token.TIPO_DATO)
-								identi.add(new Identificador(nodo.anterior.dato.getValor(),tokensig.getValor(),nodo.anterior.anterior.dato.getValor(),to.getLinea()));
-							else
-								impresion.add("Error sinatactico en linea "+to.getLinea()+ " se esperaba un tipo de dato");
-							
-						}
-					}else
-						impresion.add("Error sinatactico en linea "+to.getLinea()+ " se esperaba un identificador");
+				
+				}else if (to.getValor().equals(";"))
+				{
+					boolean banderita=false;
+					try
+					{
+
+						 if (nodo.anterior.anterior.dato.getTipo()==Token.TIPO_DATO && nodo.anterior.dato.getTipo()==Token.IDENTIFICADOR){
+							 int x =0,auxRenglon=0;
+								boolean bandera=false;
+								for (int i = 0; i < identi.size(); i++) {
+									if (identi.get(i).getNombre().equals(nodo.anterior.dato.getValor()) ){
+										x++;
+										auxRenglon=i;
+									}
+									
+								}
+								if(nodo.anterior.anterior.dato.getTipo()==Token.TIPO_DATO && x>0 && nodo.anterior.dato.getTipo()==Token.IDENTIFICADOR){
+									impresion.add("Error semantico en linea "+to.getLinea()+ " la variable "+nodo.anterior.dato.getValor()+" ya habia sido declarada en la linea "+identi.get(auxRenglon).linea);
+									System.out.println("Entra al primero");
+								bandera=true;
+								}
+								
+								if(!bandera)
+									identi.add(new Identificador(nodo.anterior.dato.getValor(),"",nodo.anterior.anterior.dato.getValor(),"Local",to.getLinea()));
+								
+							}
+
+						 else if (nodo.anterior.anterior.anterior.anterior.dato.getTipo()==Token.TIPO_DATO && nodo.anterior.anterior.anterior.dato.getTipo()==Token.IDENTIFICADOR && nodo.anterior.anterior.dato.getTipo()==Token.SIMBOLO&&nodo.anterior.dato.getTipo()==Token.CONSTANTE){
+
+								int x =0,auxRenglon=0;
+								boolean bandera=false;
+								for (int i = 0; i < identi.size(); i++) {
+									if (identi.get(i).getNombre().equals(nodo.anterior.anterior.anterior.dato.getValor()) ){
+										x++;
+										auxRenglon=i;
+									}
+									
+								}
+								if(nodo.anterior.anterior.anterior.anterior.dato.getTipo()==Token.TIPO_DATO && x>0 && nodo.anterior.anterior.anterior.dato.getTipo()==Token.IDENTIFICADOR){
+									System.out.println("Entra al segundo");
+									impresion.add("Error semantico en linea "+to.getLinea()+ " la variable "+nodo.anterior.anterior.anterior.dato.getValor()+" ya habia sido declarada en la linea "+identi.get(auxRenglon).linea);
+								bandera=true;
+								}
+								
+								if(!bandera)
+									identi.add(new Identificador(nodo.anterior.anterior.anterior.dato.getValor(),nodo.anterior.dato.getValor(),nodo.anterior.anterior.anterior.anterior.dato.getValor(),"Local",to.getLinea()));
+								
+							}
+						 
+						 else if (nodo.anterior.anterior.anterior.dato.getTipo()==Token.IDENTIFICADOR&&nodo.anterior.anterior.dato.getTipo()==Token.SIMBOLO&&nodo.anterior.dato.getTipo()==Token.CONSTANTE)
+							{
+								
+								for (int i = 0; i < identi.size(); i++) {
+									if(identi.get(i).getNombre().equals(nodo.anterior.anterior.anterior.dato.getValor())){
+										identi.get(i).setValor(nodo.anterior.dato.getValor());
+										banderita=true;
+									}
+								}
+								
+								if(!banderita){
+									impresion.add("Error sintactico en linea "+to.getLinea()+ " se esperaba un Tipo de Dato");
+								}
+								
+							}
+					
+					
+					
+					} catch (Exception e){
+						System.out.println(e.getMessage());
+					}
+
+
 				}
 				break;
 			case Token.CONSTANTE:
 				if(nodo.anterior.dato.getValor().equals("="))
-					if(tokensig.getTipo()!=Token.OPERADOR_ARITMETICO&&tokensig.getTipo()!=Token.CONSTANTE&&!tokensig.getValor().equals(";"))
+					if(nodo.siguiente.dato.getTipo()!=Token.OPERADOR_ARITMETICO&&nodo.siguiente.dato.getTipo()!=Token.CONSTANTE&&!nodo.siguiente.dato.getValor().equals(";"))
 						impresion.add("Error sinatactico en linea "+to.getLinea()+ " asignacion no valida");
 				break;
 			case Token.PALABRA_RESERVADA:
 				if(to.getValor().equals("if"))
 				{
-					if(!tokensig.getValor().equals("(")) {
+					if(!nodo.siguiente.dato.getValor().equals("(")) {
 						impresion.add("Error sinatactico en linea "+to.getLinea()+ " se esperaba un (");
 					}
 				}
@@ -199,14 +374,67 @@ public class Analisis
 			case Token.OPERADOR_LOGICO:
 				if(nodo.anterior.dato.getTipo()!=Token.CONSTANTE) 
 					impresion.add("Error sinatactico en linea "+to.getLinea()+ " se esperaba una constante");
-				if(tokensig.getTipo()!=Token.CONSTANTE)
+				if(nodo.siguiente.dato.getTipo()!=Token.CONSTANTE)
 				impresion.add("Error sinatactico en linea "+to.getLinea()+ " se esperaba una constante");
 				break;
+			case Token.OPERADOR_ARITMETICO:
+				//Verificar que el nodo anterior sea una constante  
+				if(!(nodo.anterior.dato.getTipo()==Token.CONSTANTE))
+					impresion.add("Error Semantico en linea " + to.getLinea() + "Se esperaba una constante");
+				if(!(nodo.siguiente.dato.getTipo()==Token.CONSTANTE))
+					impresion.add("Error Semantico en linea " + to.getLinea() + "Se esperaba una constante");
+				String aux1="";
+				String aux2="";
+				aux1=poderoso(nodo.anterior.dato.getValor());
+				aux2=poderoso(nodo.siguiente.dato.getValor());
+				
+				if(!aux1.equals(aux2)) {
+					impresion.add("Error semantico en linea "+to.getLinea()+ " no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
+				}else {
+					int suma=0;
+					float suma2=0;
+					if(aux1.equals("int")) {
+						try {
+							suma=Integer.parseInt(nodo.anterior.dato.getValor());
+							suma+=Integer.parseInt(nodo.siguiente.dato.getValor());
+							String guarda=Integer.toString(suma);
+							for (int i = 0; i < identi.size(); i++) {
+								if(identi.get(i).getNombre().equals(nodo.anterior.anterior.anterior.dato.getValor())){
+									identi.get(i).setValor(guarda);
+									
+								}
+							}
+						} catch (NumberFormatException nfe){
+							
+						}
+					}
+					if(aux1.equals("float")) {
+						try {
+							suma2=Float.parseFloat(nodo.anterior.dato.getValor());
+							suma2+=Float.parseFloat(nodo.siguiente.dato.getValor());
+							String guarda=Float.toString(suma2);
+							
+							for (int i = 0; i < identi.size(); i++) {
+								if(identi.get(i).getNombre().equals(nodo.anterior.anterior.anterior.dato.getValor())){
+									identi.get(i).setValor(guarda);
+									
+								}
+							}
+						} catch (NumberFormatException nfe){
+							
+						}
+					}
+				}
+			  
+					break;
 			}
-			
+			analisisSintactico(nodo.siguiente);
 			return to;
+			
 		}
+		
 		return  vacio;
+		
 	}
 	public void analisisLexico(String token) {
 		int tipo=0;
@@ -226,13 +454,13 @@ public class Analisis
 			tipo = Token.OPERADOR_LOGICO;
 		else if(Arrays.asList("+","-","*","/").contains(token))
 			tipo = Token.OPERADOR_ARITMETICO;
-		else if(Arrays.asList("true","false").contains(token)||Pattern.matches("^\\d+$",token)) 
+		else if(Arrays.asList("true","false").contains(token)||Pattern.matches("^\\d+$",token) || Pattern.matches("[0-9]+.[0-9]+", token)) 
 			tipo = Token.CONSTANTE;
 		else if(token.equals("class")) 
 			tipo =Token.CLASE;
 		else {
 			//Cadenas validas
-			Pattern pat = Pattern.compile("^[a-z]+$");//Expresiones Regulares
+			Pattern pat = Pattern.compile("^[a-zA -Z]+$");//Expresiones Regulares
 			Matcher mat = pat.matcher(token);
 			if(mat.find()) 
 				tipo = Token.IDENTIFICADOR;
