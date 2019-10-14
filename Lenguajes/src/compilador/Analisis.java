@@ -111,6 +111,7 @@ public class Analisis
 						if(!(nodo.siguiente.siguiente.dato.getValor().contains(";"))) {
 							if(!isNumeric(nodo.siguiente.siguiente.siguiente.dato.getValor())) {
 								String guarda;
+								System.out.println("entra al primer int alav");
 								guarda=poderoso(nodo.siguiente.siguiente.siguiente.dato.getValor());
 								impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nodo.siguiente.dato.getValor()+"' del tipo int"+" el valor '"+ nodo.siguiente.siguiente.siguiente.dato.getValor()+"' del tipo de dato "+guarda);				
 								}
@@ -138,7 +139,7 @@ public class Analisis
 							}
 						
 		
-				}
+						}
 				}
 			
 				 //para el caso x=5;
@@ -155,6 +156,7 @@ public class Analisis
 								 guarda=poderoso(valor);
 							 if(!(identi.get(i).getTipo().equals(guarda) && identi.get(i).getNombre().equals(nombre))) {
 								 if (!(impresion.contains("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda))) {
+									 System.out.println("Entra al segundo int");
 									 impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda);
 							 	}
 							 }
@@ -172,11 +174,10 @@ public class Analisis
 								 if(!(identi.get(i).getTipo().equals(guarda) && identi.get(i).getNombre().equals(nombre))) {
 									 if (!(impresion.contains("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo boolean"+" el valor '"+ valor+"' del tipo de dato "+guarda))) {
 										 impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo boolean"+" el valor '"+ valor+"' del tipo de dato "+guarda);
+								 		}
 								 	}
-								 	}
-							 }
-						 }	 
-				
+							 	}
+						 	}	 
 						 }
 					 }
 				 
@@ -190,7 +191,7 @@ public class Analisis
 							}
 						  }
 						if(!banderaM)
-							impresion.add("Error semantico en la linea "+to.getLinea() + " se usa la variable " + auxiliar + " no esta declarada");
+							impresion.add("Error semantico en la linea "+to.getLinea() + " se usa la variable '" + auxiliar + "' no esta declarada");
 						  }
 	
 	
@@ -289,7 +290,7 @@ public class Analisis
 									
 								}
 								if(nodo.anterior.anterior.dato.getTipo()==Token.TIPO_DATO && x>0 && nodo.anterior.dato.getTipo()==Token.IDENTIFICADOR){
-									impresion.add("Error semantico en linea "+to.getLinea()+ " la variable "+nodo.anterior.dato.getValor()+" ya habia sido declarada en la linea "+identi.get(auxRenglon).linea);
+									impresion.add("Error semantico en linea "+to.getLinea()+ " la variable '"+nodo.anterior.dato.getValor()+"' ya habia sido declarada en la linea "+identi.get(auxRenglon).linea);
 									System.out.println("Entra al primero");
 								bandera=true;
 								}
@@ -312,7 +313,7 @@ public class Analisis
 								}
 								if(nodo.anterior.anterior.anterior.anterior.dato.getTipo()==Token.TIPO_DATO && x>0 && nodo.anterior.anterior.anterior.dato.getTipo()==Token.IDENTIFICADOR){
 									System.out.println("Entra al segundo");
-									impresion.add("Error semantico en linea "+to.getLinea()+ " la variable "+nodo.anterior.anterior.anterior.dato.getValor()+" ya habia sido declarada en la linea "+identi.get(auxRenglon).linea);
+									impresion.add("Error semantico en linea "+to.getLinea()+ " la variable '"+nodo.anterior.anterior.anterior.dato.getValor()+"' ya habia sido declarada en la linea "+identi.get(auxRenglon).linea);
 								bandera=true;
 								}
 								
@@ -400,24 +401,122 @@ public class Analisis
 				String perron = null;
 				aux1=poderoso(nodo.anterior.dato.getValor());
 				aux2=poderoso(nodo.siguiente.dato.getValor());
-			
 				for(int i=0;i<identi.size();i++) {
 					if(identi.get(i).getNombre().equals(nodo.anterior.anterior.anterior.dato.getValor())) {
 						perron=identi.get(i).getTipo();
 					}
 					
 				}
-				if(!((aux1.equals(perron))&&(aux2.equals(perron)))) {
-					impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a "+nodo.anterior.anterior.anterior.dato.getValor()+" del tipo "+perron+ " no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
+				//para la declaracion public int x=5+5;
+				if(!(perron!=null)) {
+					String loca1=poderoso(nodo.anterior.dato.getValor());
+					String loca2=poderoso(nodo.siguiente.dato.getValor());
+					String tipo=nodo.anterior.anterior.anterior.anterior.dato.getValor();
+					if((loca1!=loca2)){
+						impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+tipo+ " no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+loca1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +loca2);						
+					}else {
+						int suma=0;
+						float suma2=0;
+						String guarda=null;
+						if(tipo.equals("int")) {
+							System.out.println("poquito mas");
+							try {
+								if(to.getValor().equals("+")) {
+									System.out.println("ppquito mas mas");
+								suma=Integer.parseInt(nodo.anterior.dato.getValor());
+								suma+=Integer.parseInt(nodo.siguiente.dato.getValor());
+								guarda=Integer.toString(suma);
+								}
+								if(to.getValor().equals("-")) {
+									suma=Integer.parseInt(nodo.anterior.dato.getValor());
+									suma-=Integer.parseInt(nodo.siguiente.dato.getValor());
+									guarda=Integer.toString(suma);
+								}
+								if(to.getValor().equals("/")) {
+									suma=Integer.parseInt(nodo.anterior.dato.getValor());
+									suma/=Integer.parseInt(nodo.siguiente.dato.getValor());
+									guarda=Integer.toString(suma);
+								}
+								if(to.getValor().equals("*")) {
+									suma=Integer.parseInt(nodo.anterior.dato.getValor());
+									suma*=Integer.parseInt(nodo.siguiente.dato.getValor());
+									guarda=Integer.toString(suma);
+								}
+								
+								identi.add(new Identificador(nodo.anterior.anterior.anterior.dato.getValor(),guarda,nodo.anterior.anterior.anterior.anterior.dato.getValor(),"global",to.getLinea()));
+										
+									
+								
+							} catch (NumberFormatException nfe){
+								
+							}
+						}
+						if(tipo.equals("float")) {
+							try {
+								if(to.getValor().equals("+")) {
+								suma2=Float.parseFloat(nodo.anterior.dato.getValor());
+								suma2+=Float.parseFloat(nodo.siguiente.dato.getValor());
+								guarda=Float.toString(suma2);
+								}
+								if(to.getValor().equals("-")) {
+									suma2=Float.parseFloat(nodo.anterior.dato.getValor());
+									suma2-=Float.parseFloat(nodo.siguiente.dato.getValor());
+									guarda=Float.toString(suma2);
+								}
+								if(to.getValor().equals("/")) {
+									suma2=Float.parseFloat(nodo.anterior.dato.getValor());
+									suma2/=Float.parseFloat(nodo.siguiente.dato.getValor());
+									guarda=Float.toString(suma2);
+									}
+								if(to.getValor().equals("*")) {
+									suma2=Float.parseFloat(nodo.anterior.dato.getValor());
+									suma2*=Float.parseFloat(nodo.siguiente.dato.getValor());
+									guarda=Float.toString(suma2);
+									}
+								identi.add(new Identificador(nodo.anterior.anterior.anterior.dato.getValor(),guarda,nodo.anterior.anterior.anterior.anterior.dato.getValor(),"global",to.getLinea()));
+							} catch (NumberFormatException nfe){
+								
+							}
+						}
+					}
+					break;
 				}
-				else {
+				boolean bandera=false;
+				if(!((aux1.equals(perron))&&(aux2.equals(perron) ))) {
+					System.out.println("entra al menos esperado");
+					impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+perron+ " no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
+				}else {
+					bandera=true;
+				}
+			
+				if(bandera) {
+					System.out.println("el auxiliar uno tiene el valor"+aux1);
 					int suma=0;
 					float suma2=0;
+					String guarda=null;
 					if(aux1.equals("int")) {
+					
 						try {
+							if(to.getValor().equals("+")) {
 							suma=Integer.parseInt(nodo.anterior.dato.getValor());
 							suma+=Integer.parseInt(nodo.siguiente.dato.getValor());
-							String guarda=Integer.toString(suma);
+							guarda=Integer.toString(suma);
+							}
+							if(to.getValor().equals("-")) {
+								suma=Integer.parseInt(nodo.anterior.dato.getValor());
+								suma-=Integer.parseInt(nodo.siguiente.dato.getValor());
+								guarda=Integer.toString(suma);
+							}
+							if(to.getValor().equals("/")) {
+								suma=Integer.parseInt(nodo.anterior.dato.getValor());
+								suma/=Integer.parseInt(nodo.siguiente.dato.getValor());
+								guarda=Integer.toString(suma);
+							}
+							if(to.getValor().equals("*")) {
+								suma=Integer.parseInt(nodo.anterior.dato.getValor());
+								suma*=Integer.parseInt(nodo.siguiente.dato.getValor());
+								guarda=Integer.toString(suma);
+							}
 							for (int i = 0; i < identi.size(); i++) {
 								if(identi.get(i).getNombre().equals(nodo.anterior.anterior.anterior.dato.getValor())){
 									identi.get(i).setValor(guarda);
@@ -430,10 +529,26 @@ public class Analisis
 					}
 					if(aux1.equals("float")) {
 						try {
+							if(to.getValor().equals("+")) {
 							suma2=Float.parseFloat(nodo.anterior.dato.getValor());
 							suma2+=Float.parseFloat(nodo.siguiente.dato.getValor());
-							String guarda=Float.toString(suma2);
-							
+							guarda=Float.toString(suma2);
+							}
+							if(to.getValor().equals("-")) {
+								suma2=Float.parseFloat(nodo.anterior.dato.getValor());
+								suma2-=Float.parseFloat(nodo.siguiente.dato.getValor());
+								guarda=Float.toString(suma2);
+							}
+							if(to.getValor().equals("/")) {
+								suma2=Float.parseFloat(nodo.anterior.dato.getValor());
+								suma2/=Float.parseFloat(nodo.siguiente.dato.getValor());
+								guarda=Float.toString(suma2);
+								}
+							if(to.getValor().equals("*")) {
+								suma2=Float.parseFloat(nodo.anterior.dato.getValor());
+								suma2*=Float.parseFloat(nodo.siguiente.dato.getValor());
+								guarda=Float.toString(suma2);
+								}
 							for (int i = 0; i < identi.size(); i++) {
 								if(identi.get(i).getNombre().equals(nodo.anterior.anterior.anterior.dato.getValor())){
 									identi.get(i).setValor(guarda);
@@ -445,7 +560,7 @@ public class Analisis
 						}
 					}
 				}
-			  
+			
 					break;
 			}
 			analisisSintactico(nodo.siguiente);
@@ -503,7 +618,7 @@ public class Analisis
 		return "";
 	}
 	public String separaDelimitadores(String linea){
-		for (String string : Arrays.asList("(",")","{","}","=",";","+","<",">","else")) {
+		for (String string : Arrays.asList("(",")","{","}","=",";","+","<",">","else","-","*","/")) {
 			if(string.equals("=")) {
 				if(linea.indexOf(">=")>=0) {
 					linea = linea.replace(">=", " >= ");
