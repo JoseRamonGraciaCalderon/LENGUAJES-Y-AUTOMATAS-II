@@ -28,7 +28,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 	private JTextArea areaTexto;
 	private JList<String> tokens;
 	private JTabbedPane documentos,consola,tabladesimbolos;
-	private String [] titulos ={"Tipo","Nombre","Valor","Tpodevariable","Linea"};
+	private String [] titulos ={"Tipo","Nombre","Valor","Alcance","Linea"};
 	DefaultTableModel modelo = new DefaultTableModel(new Object[0][0],titulos);
 	private JTable mitabla = new JTable(modelo);
 	public static void main(String[] args) {

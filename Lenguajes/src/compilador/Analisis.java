@@ -120,6 +120,7 @@ public class Analisis
 				if (to.getValor().equals("boolean")) {	
 						if(!(nodo.siguiente.siguiente.dato.getValor().contains(";"))) {
 							if(!isString(nodo.siguiente.siguiente.siguiente.dato.getValor())) {
+								System.out.println("Entro al primer boolean");
 								String guarda;
 								guarda=poderoso(nodo.siguiente.siguiente.siguiente.dato.getValor());
 								impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nodo.siguiente.dato.getValor()+"' del tipo boolean"+" el valor '"+ nodo.siguiente.siguiente.siguiente.dato.getValor()+"' del tipo de dato "+guarda);
@@ -135,23 +136,21 @@ public class Analisis
 								impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nodo.siguiente.dato.getValor()+"' del tipo float"+" el valor '"+ nodo.siguiente.siguiente.siguiente.dato.getValor()+"' del tipo de dato "+guarda);
 							
 							}
-						}
+						
 		
+				}
 				}
 			
 				 //para el caso x=5;
 				 if(to.getValor().equals(";")) {
 					 if(nodo.anterior.anterior.dato.getValor().equals("=") && !(nodo.anterior.dato.getValor().contains("+")||nodo.anterior.dato.getValor().contains("/")||nodo.anterior.dato.getValor().contains("*")||nodo.anterior.dato.getValor().contains("-"))) {
-						 if(!(nodo.anterior.dato.getTipo()==Token.IDENTIFICADOR&&nodo.anterior.anterior.anterior.dato.getTipo()==Token.IDENTIFICADOR)) {
-							 
-						System.out.println("Entro a x=5");
-						 System.out.println(nodo.anterior.dato.getValor()+ " auxiliar valor");
-						 String nombre=nodo.anterior.anterior.anterior.dato.getValor();
-						 System.out.println(nombre+" auxiliar nombre");
+
+						 
+						 
 						 String guarda=null;
 						for(int i=0;i<identi.size();i++) {
 							 String valor=nodo.anterior.dato.getValor();
-							
+							 String nombre=nodo.anterior.anterior.anterior.dato.getValor();
 							 if(identi.get(i).getTipo().equals("int") && identi.get(i).getNombre().equals(nombre)) {
 								 guarda=poderoso(valor);
 							 if(!(identi.get(i).getTipo().equals(guarda) && identi.get(i).getNombre().equals(nombre))) {
@@ -163,16 +162,16 @@ public class Analisis
 							 if(identi.get(i).getTipo().equals("float") && identi.get(i).getNombre().equals(nombre) ) {
 								 guarda=poderoso(valor);
 								 if(!(identi.get(i).getTipo().equals(guarda) && identi.get(i).getNombre().equals(nombre))) {
-									 if (!(impresion.contains("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda))) {
-										 impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda);
+									 if (!(impresion.contains("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo float"+" el valor '"+ valor+"' del tipo de dato "+guarda))) {
+										 impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo float"+" el valor '"+ valor+"' del tipo de dato "+guarda);
 								 	}
 								 }
 								}else
 							 if(identi.get(i).getTipo().equals("boolean") && identi.get(i).getNombre().equals(nombre)) {
 								 guarda=poderoso(valor);
 								 if(!(identi.get(i).getTipo().equals(guarda) && identi.get(i).getNombre().equals(nombre))) {
-									 if (!(impresion.contains("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda))) {
-										 impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo int"+" el valor '"+ valor+"' del tipo de dato "+guarda);
+									 if (!(impresion.contains("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo boolean"+" el valor '"+ valor+"' del tipo de dato "+guarda))) {
+										 impresion.add("Error semantico en la linea "+to.getLinea()+" al asignar a '"+nombre+"' del tipo boolean"+" el valor '"+ valor+"' del tipo de dato "+guarda);
 								 	}
 								 	}
 							 }
@@ -180,7 +179,7 @@ public class Analisis
 				
 						 }
 					 }
-				 }
+				 
 					if(to.getTipo()==Token.IDENTIFICADOR) {
 						String auxiliar = to.getValor();
 						boolean banderaM = false;
@@ -241,7 +240,7 @@ public class Analisis
 					impresion.add("Error sinatactico en la linea "+to.getLinea()+" se esparaba un simbolo");
 				else
 					if(nodo.anterior.dato.getValor().equals("class")){
-						identi.add( new Identificador(to.getValor(), " ", "class","local",to.getLinea()));
+						identi.add( new Identificador(to.getValor(), " ", "class","globa",to.getLinea()));
 					}
 				break;
 			case Token.TIPO_DATO:
@@ -296,7 +295,7 @@ public class Analisis
 								}
 								
 								if(!bandera)
-									identi.add(new Identificador(nodo.anterior.dato.getValor(),"",nodo.anterior.anterior.dato.getValor(),"Local",to.getLinea()));
+									identi.add(new Identificador(nodo.anterior.dato.getValor(),"",nodo.anterior.anterior.dato.getValor(),"global",to.getLinea()));
 								
 							}
 
@@ -318,7 +317,7 @@ public class Analisis
 								}
 								
 								if(!bandera)
-									identi.add(new Identificador(nodo.anterior.anterior.anterior.dato.getValor(),nodo.anterior.dato.getValor(),nodo.anterior.anterior.anterior.anterior.dato.getValor(),"Local",to.getLinea()));
+									identi.add(new Identificador(nodo.anterior.anterior.anterior.dato.getValor(),nodo.anterior.dato.getValor(),nodo.anterior.anterior.anterior.anterior.dato.getValor(),"global",to.getLinea()));
 								
 							}
 						 
@@ -373,9 +372,22 @@ public class Analisis
 				break;
 			case Token.OPERADOR_LOGICO:
 				if(nodo.anterior.dato.getTipo()!=Token.CONSTANTE) 
+					
 					impresion.add("Error sinatactico en linea "+to.getLinea()+ " se esperaba una constante");
-				if(nodo.siguiente.dato.getTipo()!=Token.CONSTANTE)
+				if(nodo.siguiente.dato.getTipo()!=Token.CONSTANTE) {
 				impresion.add("Error sinatactico en linea "+to.getLinea()+ " se esperaba una constante");
+				}
+				String auxi1;
+				String auxi2;
+				auxi1=poderoso(nodo.anterior.dato.getValor());
+				auxi2=poderoso(nodo.siguiente.dato.getValor());
+				String perron1=null;
+				System.out.println(auxi1);
+				System.out.println(auxi2);
+					if((auxi1!=auxi2)) {
+						impresion.add("Error semantico en linea "+to.getLinea()+" no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+auxi1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +auxi2);
+					
+				}
 				break;
 			case Token.OPERADOR_ARITMETICO:
 				//Verificar que el nodo anterior sea una constante  
@@ -385,12 +397,20 @@ public class Analisis
 					impresion.add("Error Semantico en linea " + to.getLinea() + "Se esperaba una constante");
 				String aux1="";
 				String aux2="";
+				String perron = null;
 				aux1=poderoso(nodo.anterior.dato.getValor());
 				aux2=poderoso(nodo.siguiente.dato.getValor());
-				
-				if(!aux1.equals(aux2)) {
-					impresion.add("Error semantico en linea "+to.getLinea()+ " no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
-				}else {
+			
+				for(int i=0;i<identi.size();i++) {
+					if(identi.get(i).getNombre().equals(nodo.anterior.anterior.anterior.dato.getValor())) {
+						perron=identi.get(i).getTipo();
+					}
+					
+				}
+				if(!((aux1.equals(perron))&&(aux2.equals(perron)))) {
+					impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a "+nodo.anterior.anterior.anterior.dato.getValor()+" del tipo "+perron+ " no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
+				}
+				else {
 					int suma=0;
 					float suma2=0;
 					if(aux1.equals("int")) {
@@ -483,7 +503,7 @@ public class Analisis
 		return "";
 	}
 	public String separaDelimitadores(String linea){
-		for (String string : Arrays.asList("(",")","{","}","=",";")) {
+		for (String string : Arrays.asList("(",")","{","}","=",";","+","<",">","else")) {
 			if(string.equals("=")) {
 				if(linea.indexOf(">=")>=0) {
 					linea = linea.replace(">=", " >= ");
@@ -491,6 +511,10 @@ public class Analisis
 				}
 				if(linea.indexOf("<=")>=0) {
 					linea = linea.replace("<=", " <= ");
+					break;
+				}
+				if(linea.indexOf("!=")>=0) {
+					linea = linea.replace("!=", " != ");
 					break;
 				}
 				if(linea.indexOf("==")>=0)
