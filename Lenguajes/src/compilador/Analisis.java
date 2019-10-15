@@ -229,7 +229,7 @@ public class Analisis
 	
 		if(nodo!=null) {
 			to =  nodo.dato;
-			
+			try {
 			switch (to.getTipo()) {
 			case Token.MODIFICADOR:
 				int sig=nodo.siguiente.dato.getTipo();
@@ -386,7 +386,7 @@ public class Analisis
 				System.out.println(auxi1);
 				System.out.println(auxi2);
 					if((auxi1!=auxi2)) {
-						impresion.add("Error semantico en linea "+to.getLinea()+" no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+auxi1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +auxi2);
+						impresion.add("Error semantico en linea "+to.getLinea()+" no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+auxi1+" y el valor '"+nodo.siguiente.dato.getValor()+"' del tipo " +auxi2);
 					
 				}
 				break;
@@ -414,12 +414,13 @@ public class Analisis
 					String loca2=poderoso(nodo.siguiente.dato.getValor());
 					String tipo=nodo.anterior.anterior.anterior.anterior.dato.getValor();
 					if((loca1!=loca2)){
-						impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+tipo+ " no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+loca1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +loca2);	
+						impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+tipo+ " no son del mismo tipo de dato el valor '"+nodo.anterior.dato.getValor()+"' del tipo "+loca1+" y el valor '"+nodo.siguiente.dato.getValor()+"' del tipo " +loca2);	
 					}else {
 						bandera1=true;
 					}
 					if(loca1.equals("boolean") && loca2.equals("boolean")) {
-						impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+tipo+ " no puedes asignar el  tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
+						impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+tipo
+								+ " no puedes asignar el tipo de dato , valor '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y el valor '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
 						bandera1=false;
 					}
 					if(bandera){
@@ -492,12 +493,12 @@ public class Analisis
 				boolean bandera=false;
 				if(!((aux1.equals(perron))&&(aux2.equals(perron) ))) {
 					System.out.println("entra al menos esperado");
-					impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+perron+ " no son del mismo tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
+					impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+perron+ " no son del mismo tipo de dato el valor '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y el valor '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
 				}else {
 					bandera=true;
 				}
 				if(aux1.equals("boolean") && aux2.equals("boolean")) {
-					impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+perron+ " no puedes asignar el  tipo de dato la variable '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y la variable '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
+					impresion.add("Error semantico en linea "+to.getLinea()+" al asignar a '"+nodo.anterior.anterior.anterior.dato.getValor()+"' del tipo "+perron+ " no puedes asignar el  tipo de dato el valor '"+nodo.anterior.dato.getValor()+"' del tipo "+aux1+" y el valor '"+nodo.siguiente.dato.getValor()+"' del tipo " +aux2);
 					bandera=false;
 				}
 				if(bandera) {
@@ -572,6 +573,9 @@ public class Analisis
 				}
 			
 					break;
+			}
+			}catch(Exception e) {
+				
 			}
 			analisisSintactico(nodo.siguiente);
 			return to;

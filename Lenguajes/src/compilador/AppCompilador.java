@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.table.DefaultTableModel;
 public class AppCompilador extends JFrame implements ActionListener{
 	// Componentes o Atributos
@@ -25,6 +27,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 	private JMenuItem itemNuevo,itemAbrir,itemGuardar,itemSalir,itemAnalisLexico;
 	private JFileChooser ventanaArchivos;
 	private File archivo;
+	public 	JLabel prueba;
 	private JTextArea areaTexto;
 	private JList<String> tokens;
 	private JTabbedPane documentos,consola,tabladesimbolos;
@@ -89,7 +92,8 @@ public class AppCompilador extends JFrame implements ActionListener{
 		add(tabladesimbolos);
 		consola.addTab("Consola",new JScrollPane(tokens));
 		add(consola);
-	
+		prueba=new JLabel();
+		add(prueba);
 		itemNuevo.setIcon(new ImageIcon("nuevo.png"));
 		itemGuardar.setIcon(new ImageIcon("guardar.png"));
 		itemAbrir.setIcon(new ImageIcon("abrir.png"));
@@ -121,6 +125,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 		
 			return;
 		}
+	
 		if (e.getSource()==itemSalir) {
 			System.exit(0);
 			return;
@@ -144,6 +149,22 @@ public class AppCompilador extends JFrame implements ActionListener{
 		if(e.getSource()==itemGuardar) {
 			guardar();
 		}
+		areaTexto.addCaretListener(new CaretListener() {
+		    	public void caretUpdate(CaretEvent e) {
+		    		areaTexto = (JTextArea)e.getSource();		 			 
+		 			 
+					  int linea = 1;
+					  int columna = 1;
+					 
+					  try {
+					    int caretpos = areaTexto.getCaretPosition();
+					    linea= areaTexto.getLineOfOffset(caretpos);
+					    columna = caretpos - areaTexto.getLineStartOffset(linea);
+					    linea += 1;
+					  } catch(Exception ex) { }
+					  actualizarEstado(linea, columna);
+		    	}
+		    });
 	}
 	public boolean guardar() {
 		try {
@@ -182,4 +203,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 			return false;
 		}
 	}
+	public void actualizarEstado(int linea, int columna) {
+		prueba.setText("Linea: " + linea + " Columna: " + columna);
+		}
 }
