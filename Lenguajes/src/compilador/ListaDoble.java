@@ -1,4 +1,6 @@
-package compilador;
+package Compilador;
+
+import Compilador.NodoDoble;
 
 public class ListaDoble<E>{
 	private NodoDoble <E>Inicio;

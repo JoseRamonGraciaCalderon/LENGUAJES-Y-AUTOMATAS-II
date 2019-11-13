@@ -1,4 +1,4 @@
-package compilador;
+package Compilador;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -30,10 +30,13 @@ public class AppCompilador extends JFrame implements ActionListener{
 	public 	JLabel prueba;
 	private JTextArea areaTexto;
 	private JList<String> tokens;
-	private JTabbedPane documentos,consola,tabladesimbolos;
+	private JTabbedPane documentos,consola,tabladesimbolos,cuadruplos;
 	private String [] titulos ={"Tipo","Nombre","Valor","Alcance","Linea"};
-	DefaultTableModel modelo = new DefaultTableModel(new Object[0][0],titulos);
+	private String [] titulosc ={"Operador","Operando 1","Operando 2","Resultado"};
+	public DefaultTableModel modelo = new DefaultTableModel(new Object[0][0],titulos);
 	private JTable mitabla = new JTable(modelo);
+	public DefaultTableModel modeloc = new DefaultTableModel(new Object[0][0],titulosc);
+	private JTable cuadro = new JTable(modeloc);
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -92,8 +95,9 @@ public class AppCompilador extends JFrame implements ActionListener{
 		add(tabladesimbolos);
 		consola.addTab("Consola",new JScrollPane(tokens));
 		add(consola);
-		prueba=new JLabel();
-		add(prueba);
+		cuadruplos =new JTabbedPane();
+		cuadruplos.addTab("Cuadruplos", new JScrollPane(cuadro));
+		add(cuadruplos);
 		itemNuevo.setIcon(new ImageIcon("nuevo.png"));
 		itemGuardar.setIcon(new ImageIcon("guardar.png"));
 		itemAbrir.setIcon(new ImageIcon("abrir.png"));
@@ -102,12 +106,14 @@ public class AppCompilador extends JFrame implements ActionListener{
 		documentos.setIconAt(0, new ImageIcon("codigo.png"));
 		consola.setIconAt(0, new ImageIcon("consola.png"));
 		tabladesimbolos.setIconAt(0, new ImageIcon("tabla.png"));
+		cuadruplos.setIconAt(0, new ImageIcon("tabla.png"));
 		consola.setToolTipText("Aqui se muestra el resultado del analisis");
 
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==itemAnalisLexico) {
+			
 			if(guardar()){
 				Analisis analisador = new Analisis(archivo.getAbsolutePath());
 				tokens.setListData(analisador.getmistokens().toArray( new String [0]));
@@ -121,6 +127,24 @@ public class AppCompilador extends JFrame implements ActionListener{
 					}
 				}
 
+				modeloc=new DefaultTableModel(new Object[0][0],titulosc);
+				
+				cuadro.setModel(modeloc);
+				for (int i=0 ;i< analisador.getCuadrupla().size(); i++) {
+					Cuadrupla id =  analisador.getCuadrupla().get(i);
+						if(id.operador!="") {
+						Object datostablas2[]= {id.operador,id.operandouno,id.operandodos,id.resultado};
+						modeloc.addRow(datostablas2);
+						}
+						id.operador="";
+						id.operandouno="";
+						id.operandodos="";
+						id.resultado="";
+						
+						
+				
+					
+				}
 			}
 		
 			return;
@@ -149,22 +173,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 		if(e.getSource()==itemGuardar) {
 			guardar();
 		}
-		areaTexto.addCaretListener(new CaretListener() {
-		    	public void caretUpdate(CaretEvent e) {
-		    		areaTexto = (JTextArea)e.getSource();		 			 
-		 			 
-					  int linea = 1;
-					  int columna = 1;
-					 
-					  try {
-					    int caretpos = areaTexto.getCaretPosition();
-					    linea= areaTexto.getLineOfOffset(caretpos);
-					    columna = caretpos - areaTexto.getLineStartOffset(linea);
-					    linea += 1;
-					  } catch(Exception ex) { }
-					  actualizarEstado(linea, columna);
-		    	}
-		    });
+
 	}
 	public boolean guardar() {
 		try {
@@ -203,7 +212,5 @@ public class AppCompilador extends JFrame implements ActionListener{
 			return false;
 		}
 	}
-	public void actualizarEstado(int linea, int columna) {
-		prueba.setText("Linea: " + linea + " Columna: " + columna);
-		}
+
 }

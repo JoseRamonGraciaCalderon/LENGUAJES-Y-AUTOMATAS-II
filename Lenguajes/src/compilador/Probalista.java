@@ -1,4 +1,6 @@
-package compilador;
+package Compilador;
+
+import Compilador.Token;
 
 public class Probalista {
 

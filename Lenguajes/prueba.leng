@@ -1,9 +1,0 @@
-public class hola{
- private int x=0;
- public boolean k = false
- private int x=9;
-
- else{
-    k=8;
- }
-}
