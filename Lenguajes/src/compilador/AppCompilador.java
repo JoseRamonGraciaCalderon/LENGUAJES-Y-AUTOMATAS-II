@@ -28,7 +28,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 	private JFileChooser ventanaArchivos;
 	private File archivo;
 	public 	JLabel prueba;
-	private JTextArea areaTexto;
+	private JTextArea areaTexto,Ensamblador;
 	private JList<String> tokens;
 	private JTabbedPane documentos,consola,tabladesimbolos,cuadruplos;
 	private String [] titulos ={"Tipo","Nombre","Valor","Alcance","Linea"};
@@ -89,14 +89,19 @@ public class AppCompilador extends JFrame implements ActionListener{
 		tabladesimbolos=new  JTabbedPane();
 		documentos.addTab("Nuevo", new JScrollPane(areaTexto));
 		documentos.setToolTipText("Aqui se muestra el codigo");
+	
 		add(documentos);
+		
 		tokens=new JList<String>();
 		tabladesimbolos.addTab("Tabla",new JScrollPane(mitabla));
+		tabladesimbolos.addTab("Cuadruplos", new JScrollPane(cuadro));
 		add(tabladesimbolos);
 		consola.addTab("Consola",new JScrollPane(tokens));
 		add(consola);
 		cuadruplos =new JTabbedPane();
-		cuadruplos.addTab("Cuadruplos", new JScrollPane(cuadro));
+
+		Ensamblador=new JTextArea();
+		cuadruplos.addTab("Codigo Objeto", new JScrollPane(Ensamblador));
 		add(cuadruplos);
 		itemNuevo.setIcon(new ImageIcon("nuevo.png"));
 		itemGuardar.setIcon(new ImageIcon("guardar.png"));
@@ -106,6 +111,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 		documentos.setIconAt(0, new ImageIcon("codigo.png"));
 		consola.setIconAt(0, new ImageIcon("consola.png"));
 		tabladesimbolos.setIconAt(0, new ImageIcon("tabla.png"));
+		tabladesimbolos.setIconAt(1, new ImageIcon("tabla.png"));
 		cuadruplos.setIconAt(0, new ImageIcon("tabla.png"));
 		consola.setToolTipText("Aqui se muestra el resultado del analisis");
 
@@ -117,6 +123,11 @@ public class AppCompilador extends JFrame implements ActionListener{
 			if(guardar()){
 				Analisis analisador = new Analisis(archivo.getAbsolutePath());
 				tokens.setListData(analisador.getmistokens().toArray( new String [0]));
+				Ensamblador.setText(null);
+				Ensamblador.setText(analisador.getmisObjetos().toString());
+			
+
+				
 				modelo = new DefaultTableModel(new Object[0][0],titulos);
 				mitabla.setModel(modelo);
 				for (int i=0 ;i< analisador.getIdenti().size(); i++) {
@@ -126,7 +137,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 						modelo.addRow(datostabla);
 					}
 				}
-
+				GuardaCodigoObjeto();
 				modeloc=new DefaultTableModel(new Object[0][0],titulosc);
 				
 				cuadro.setModel(modeloc);
@@ -139,11 +150,7 @@ public class AppCompilador extends JFrame implements ActionListener{
 						id.operador="";
 						id.operandouno="";
 						id.operandodos="";
-						id.resultado="";
-						
-						
-				
-					
+						id.resultado="";	
 				}
 			}
 		
@@ -174,6 +181,17 @@ public class AppCompilador extends JFrame implements ActionListener{
 			guardar();
 		}
 
+	}
+	public void GuardaCodigoObjeto() {
+		try {
+		FileWriter fw = new FileWriter("D:\\Jose\\Documents\\"+archivo.getName()+" Codigo Objeto.ASM");
+		BufferedWriter bf = new BufferedWriter(fw);
+		bf.write(Ensamblador.getText());
+		bf.close();
+		fw.close();
+		}catch(Exception e) {
+			
+		}
 	}
 	public boolean guardar() {
 		try {

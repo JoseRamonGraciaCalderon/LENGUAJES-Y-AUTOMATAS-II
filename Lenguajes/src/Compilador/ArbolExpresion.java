@@ -131,39 +131,36 @@ public class ArbolExpresion
          
              double vder = Evaluar(R.getHD());
   
-              Character op = R.getData().getValor().charAt(0);
+             Character op = R.getData().getValor().charAt(0);
             
               
               switch(op)
               {
               	
-              
+              	
                  case '+' : res = vizq + vder;
-    
-                	 System.out.printf("%1s %5s %4s %8s %4s %8s %4s %8s %4s ","|","+","|",vizq,"|",vder,"|",res,"|");
-                	
+                 System.out.printf("%1s %5s %4s %8s %4s %8s %4s %8s %4s ","|","+","|",vizq,"|",vder,"|",res,"|");             	
+                 System.out.println();
                  
-                	 prueba++;
                  break;
                  case '-' : res = vizq - vder;
-                 prueba++;
+                
+                 System.out.printf("%1s %5s %4s %8s %4s %8s %4s %8s %4s ","|","-","|",vizq,"|",vder,"|",res,"|");  	
                  System.out.println();
                  break;
-                 
                  case '*' : res = vizq * vder;
-                 prueba++;
+                 
                  System.out.printf("%1s %5s %4s %8s %4s %8s %4s %8s %4s","|","*","|",vizq,"|",vder,"|",res,"|");
-  
+                 System.out.println();
                  break;
                  case '/' : res = vizq / vder;
-                 prueba++;
                  System.out.printf("%1s %5s %4s %8s %4s %8s %4s %8s %4s","|","/","|",vizq,"|",vder,"|",res,"|");
-        
+                 System.out.println();
                  break;
                  case '^' : res = Math.pow(vizq,vder);
-                 prueba++;
+              
                  System.out.printf("%1s %5s %4s %8s %4s %8s %4s %8s %4s","|","'","|",vizq,"|",vder,"|",res,"|");
-
+                 System.out.println();
                  break;
                  default:
                 	 ; 
@@ -199,9 +196,9 @@ public class ArbolExpresion
               res="T: "+j;
               
               contador=j;
-              System.out.println("Contador "+j);
-              System.out.println();
               poderoso.add(new Cuadrupla(op.toString(),vizq,vder,res));
+              System.out.println("Dim as Int=" +vizq);
+              System.out.println("Dim as Int=" +vder);
               if(j==1) {
             	  poderoso.add(new Cuadrupla("=",res,"",""));
               }

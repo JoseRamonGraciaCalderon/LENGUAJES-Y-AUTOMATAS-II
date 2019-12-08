@@ -16,6 +16,7 @@ public class Analisis
 	int contador=0;
 	public double resultado=0;
 	ArrayList<String> impresion; //para la salida
+	public String CodigoObjeto=null;;
 	ArrayList<Identificador> identi = new ArrayList<Identificador>();
 	ArrayList<Cuadrupla> poderoso=new ArrayList<Cuadrupla>();
 	ListaDoble<Token> tokens;
@@ -35,7 +36,7 @@ public class Analisis
 			impresion.add("No hay errores lexicos");
 			analisisSintactico(tokens.getInicio());
 			analisisSemantico(tokens.getInicio());
-		
+			GeneraObjeto();
 			
 			
 		}
@@ -281,6 +282,62 @@ public class Analisis
 		}catch(IOException e) {
 			JOptionPane.showMessageDialog(null,"No se encontro el archivo favor de checar la ruta","Alerta",JOptionPane.ERROR_MESSAGE);
 		}
+	}
+	public String GeneraObjeto() {
+		int contador=0;
+		String aux="";
+		CodigoObjeto=null;
+		CodigoObjeto=";====================CODIGO========================\n"
+				+ "		.MODEL small \n" + 
+				"		.DATA \n";
+		for( int i=0; i<poderoso.size(); i++) {
+			//CodigoObjeto.add("Temp"+i+" db "+ "0"+"\n");
+			CodigoObjeto+=poderoso.get(i).getResultado().replace(" ", "").replace(":", "")+" 		dw 		0 \n";
+		  }
+		CodigoObjeto+="		.CODE\n"+
+				 "MAIN 		PROC 		FAR\n" + 
+				"		.STARTUP\n";
+		
+		for( int i=0; i<poderoso.size(); i++) {
+			if(poderoso.get(i).operador.equals("*")) {
+				CodigoObjeto+="		;Multiplication section(*)\n"
+						+ "		MOV AX,"+poderoso.get(i).getOperandouno().replace(" ", "").replace(":", "")+"\n" + 
+						"		MOV BX,"+poderoso.get(i).getOperandodos().replace(" ", "").replace(":", "")+"\n"+
+						"		MUL BX \n"+
+						"		MOV "+poderoso.get(i).getResultado().replace(" ", "").replace(":", "")+",AX"+"\n";
+			}
+			if(poderoso.get(i).operador.equals("+")) {
+				CodigoObjeto+="		;Addition section(+)\n"
+						+ "		MOV AX,"+poderoso.get(i).getOperandouno().replace(" ", "").replace(":", "")+"\n" + 
+						"		ADD AX,"+poderoso.get(i).getOperandodos().replace(" ", "").replace(":", "")+"\n"+
+						"		MOV "+poderoso.get(i).getResultado().replace(" ", "").replace(":", "")+",AX"+"\n";
+				
+			}
+			if(poderoso.get(i).operador.equals("-")) {
+				CodigoObjeto+=";		Addition section(-)\n"
+						+ "		MOV BX,"+poderoso.get(i).getOperandouno().replace(" ", "").replace(":", "")+"\n" + 
+						"		SUB BX,"+poderoso.get(i).getOperandodos().replace(" ", "").replace(":", "")+"\n"+
+						"		MOV "+poderoso.get(i).getResultado().replace(" ", "").replace(":", "")+",BX"+"\n";
+			}
+			if(poderoso.get(i).operador.equals("/")) {
+				CodigoObjeto+="		;Divition Section(/)\n"+
+						"		MOV AX,"+poderoso.get(i).getOperandouno().replace(" ", "").replace(":", "")+"\n" + 
+						"		MOV BX,"+poderoso.get(i).getOperandodos().replace(" ", "").replace(":", "")+" \n"+
+						"		DIV BX\n"+
+						"		MOV "+poderoso.get(i).getResultado().replace(" ", "").replace(":", "")+",AX \n"
+						;
+			}
+			if(poderoso.get(i).operador.equals("=")) {
+				CodigoObjeto+="		;Asignacion Section(=)\n"
+						+ "		MOV AX,"+poderoso.get(i).getOperandouno().replace(" ", "").replace(":", "")+"\n"+
+						"		MOV "+poderoso.get(i).getResultado().replace(" ", "").replace(":", "")+",AX \n";
+			}	
+			}
+		CodigoObjeto+="MAIN 		ENDP\n"
+				+ "		END";
+
+		
+		return CodigoObjeto;
 	}
 	public Token analisisSintactico(NodoDoble<Token> nodo) {
 		Token  to;
@@ -786,5 +843,8 @@ public class Analisis
 	}
 	public ArrayList<String> getmistokens() {
 		return impresion;
+	}
+	public String getmisObjetos() {
+		return CodigoObjeto;
 	}
 }
