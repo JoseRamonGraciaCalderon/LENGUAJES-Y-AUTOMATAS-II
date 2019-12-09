@@ -328,7 +328,7 @@ public class Analisis
 						;
 			}
 			if(poderoso.get(i).operador.equals("=")) {
-				CodigoObjeto+="		;Asignacion Section(=)\n"
+				CodigoObjeto+="		;assignment Section(=)\n"
 						+ "		MOV AX,"+poderoso.get(i).getOperandouno().replace(" ", "").replace(":", "")+"\n"+
 						"		MOV "+poderoso.get(i).getResultado().replace(" ", "").replace(":", "")+",AX \n";
 			}	
